@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="layout/index.html">
+<div layout:fragment="mainPage">
+    <div class="container">
+        <div class="row mt-5">
+            <div class="col-6 offset-3">
+                <form th:action="@{'/handle/' + ${polzovatel.id}}" method="post" th:if="${polzovatel}!=null">
+                    <input type="hidden" th:value="${polzovatel.id}" name="id">
+                    <div class="form-group">
+                        <label>
+                            USER NAME:
+                        </label>
+                        <input type="text" disabled class="form-control" name="userName" th:value="${polzovatel.userName}">
+                    </div>
+                    <div class="form-group">
+                        <label>
+                            COURSE NAME:
+                        </label>
+                        <select name="course.id" disabled class="form-control">
+                            <option th:each="crs: ${courses}" th:value="${crs.id}" th:text="${crs.courseName + ' '
+                            + crs.description + ' ' + crs.price}" th:selected="${crs.id==polzovatel.course.id}"></option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>
+                            COMMENT:
+                        </label>
+                        <input type="text" disabled class="form-control" name="comment" th:value="${polzovatel.comment}">
+                    </div>
+                    <div class="form-group">
+                        <label>
+                            PHONE NUMBER:
+                        </label>
+                        <input type="text" disabled class="form-control" name="phoneNumber" th:value="${polzovatel.phoneNumber}">
+                    </div>
+                    <div class="form-group mt-3">
+                        <button type="submit" th:if="${!polzovatel.handled}" class="btn btn-success">ОБРАБОТАТЬ ЗАЯВКУ</button>
+                        <button type="button" class="btn btn-dark" data-bs-toggle="modal" data-bs-target="#delete">УДАЛИТЬ</button>
+                    </div>
+                    <div class="form-group mt-3">
+                                <button type="button" class="btn btn-dark" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                                    НАЗНАЧИТЬ ОПЕРАТОРА
+                                </button>
+                                <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#exampleModal1">
+                                    УБРАТЬ ОПЕРАТОРА
+                                </button>
+                    </div>
+                </form>
+                <form th:action="@{'/delete'}" method="post" th:if="${polzovatel}!=null">
+                    <input type="hidden" name="id" th:value="${polzovatel.id}">
+                    <div class="modal fade" id="delete" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="staticBackdropLabel1">Confirm delete</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        Are you sure?
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-light" data-bs-dismiss="modal">NO</button>
+                                        <button class="btn btn-dark">YES</button>
+                                    </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <form th:action="@{'/addOperator'}" method="post" class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">ВЫБЕРЕТИ ОПЕРАТОРА</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row mt-3">
+                        <div class="col-10 mx-auto">
+                            <table class="table table-striped table-hover">
+                                <thead>
+                                <th>Выбрать</th>
+                                <th>Имя</th>
+                                <th>Фамилия</th>
+                                <th>Департмент</th>
+                                </thead>
+                                <tbody>
+                                <tr  th:each=" opr : ${operators}">
+                                    <input type="hidden" name="user_id" th:value="${polzovatel.id}">
+                                    <td><input type="checkbox" name="operator_id" th:value="${opr.id}"></td>
+                                    <td><p th:text="${opr.name}"></p></td>
+                                    <td><p th:text="${opr.surname}"></p></td>
+                                    <td><p th:text="${opr.department}"></p></td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">ОТМЕНА</button>
+                    <button type="submit" class="btn btn-success">ДОБАВИТЬ ОПЕРАТОРА</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="modal fade" id="exampleModal1" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <form th:action="@{'/deleteOperator'}" method="post" class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel1">ОПЕРАТОРЫ</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row mt-3">
+                        <div class="col-10 mx-auto">
+                            <table class="table table-striped table-hover">
+                                <thead>
+                                <th>Выбрать</th>
+                                <th>Имя</th>
+                                <th>Фамилия</th>
+                                <th>Департмент</th>
+                                </thead>
+                                <tbody>
+                                <tr  th:each=" opr : ${polzovatel.operators}">
+                                    <input type="hidden" name="user_id" th:value="${polzovatel.id}">
+                                    <td><input type="checkbox" name="operator_id" th:value="${opr.id}"></td>
+                                    <td><p th:text="${opr.name}"></p></td>
+                                    <td><p th:text="${opr.surname}"></p></td>
+                                    <td><p th:text="${opr.department}"></p></td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">ОТМЕНА</button>
+                    <button type="submit" class="btn btn-danger">УБРАТЬ ОПЕРАТОРА</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+</html>
